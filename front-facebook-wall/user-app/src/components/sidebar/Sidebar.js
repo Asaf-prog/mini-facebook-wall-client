@@ -1,19 +1,17 @@
-import './Sidebar.css';
-export default function Sidebar({ myPostComponent,SearchUserComponent}) {
+import "./Sidebar.css";
+export default function Sidebar({ myPostComponent, SearchUserComponent }) {
+  const handleShowPosts = () => {
+    myPostComponent();
+  };
 
-    const handleShowPosts = () => {
-        myPostComponent();
-    };
-    
-      const handleSearchUser = () => {
-        SearchUserComponent();
-      };
+  const handleSearchUser = () => {
+    SearchUserComponent();
+  };
 
-
-    return (
-        <aside>
-            <button onClick={handleShowPosts}>Show My Posts</button>
-            <button onClick={handleSearchUser}>Search User</button>
-        </aside>
-        );
+  return (
+    <aside>
+      <button onClick={handleShowPosts}>Show My Posts</button>
+      <button onClick={handleSearchUser}>Search User</button>
+    </aside>
+  );
 }

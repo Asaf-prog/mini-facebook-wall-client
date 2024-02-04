@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
-export default function Register({handleChangeLogin}) {
-  const [userName, setUserName] = useState('');
+export default function Register({ handleChangeLogin }) {
+  const [userName, setUserName] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [registrationStatus, setRegistrationStatus] = useState(null);
 
@@ -11,7 +11,7 @@ export default function Register({handleChangeLogin}) {
   };
 
   const handleCheckboxChange = () => {
-    setIsAdmin(!isAdmin); 
+    setIsAdmin(!isAdmin);
   };
 
   const handleRegister = () => {
@@ -20,15 +20,18 @@ export default function Register({handleChangeLogin}) {
       IsAdmin: isAdmin,
     };
 
-    axios.post('http://localhost:5221/Face_Book_App/Create-New-User', registrationData)
-      .then(response => {
-        setRegistrationStatus('Registration successful!');
-        handleChangeLogin(registrationData.userName,isAdmin); 
-
+    axios
+      .post(
+        "http://localhost:5221/Face_Book_App/Create-New-User",
+        registrationData
+      )
+      .then((response) => {
+        setRegistrationStatus("Registration successful!");
+        handleChangeLogin(registrationData.userName, isAdmin);
       })
-      .catch(error => {
-        console.error('Error registering user:', error);
-        setRegistrationStatus('Registration failed. Please try again.');
+      .catch((error) => {
+        console.error("Error registering user:", error);
+        setRegistrationStatus("Registration failed. Please try again.");
       });
   };
 
@@ -42,7 +45,11 @@ export default function Register({handleChangeLogin}) {
       <br />
       <label>
         Admin:
-        <input type="checkbox" checked={isAdmin} onChange={handleCheckboxChange} />
+        <input
+          type="checkbox"
+          checked={isAdmin}
+          onChange={handleCheckboxChange}
+        />
       </label>
       <br />
       <button type="button" onClick={handleRegister}>

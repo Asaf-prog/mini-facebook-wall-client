@@ -1,22 +1,24 @@
-import './UserPostsComponent.css';
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import "./UserPostsComponent.css";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { HubConnectionBuilder } from "@microsoft/signalr";
 
 export default function UserPostsComponent({ userName }) {
   const [postsWithLikes, setPostsWithLikes] = useState([]);
-  const [newPostTitle, setNewPostTitle] = useState('');
-  const [newPostContent, setNewPostContent] = useState('');
+  const [newPostTitle, setNewPostTitle] = useState("");
+  const [newPostContent, setNewPostContent] = useState("");
   const [showNewPostSection, setShowNewPostSection] = useState(false);
   const [hubConnection, setHubConnection] = useState(null);
 
   const fetchUserPosts = async () => {
     try {
-      const response = await axios.get(`http://localhost:5221/Face_Book_App/user_name/${userName}/posts`);
+      const response = await axios.get(
+        `http://localhost:5221/Face_Book_App/user_name/${userName}/posts`
+      );
       const fetchedPostsWithLikes = response.data;
       setPostsWithLikes(fetchedPostsWithLikes);
     } catch (error) {
-      console.error('Error retrieving user posts:', error);
+      console.error("Error retrieving user posts:", error);
     }
   };
 
@@ -25,11 +27,11 @@ export default function UserPostsComponent({ userName }) {
       const connection = new HubConnectionBuilder()
         .withUrl("http://localhost:5221/Like-Hub")
         .build();
-  
+
       try {
         await connection.start();
         console.log("SignalR connected");
-  
+
         connection.on("ReceiveLikesUpdate", (postId, likesCount) => {
           setPostsWithLikes((prevPosts) =>
             prevPosts.map((post) =>
@@ -37,13 +39,13 @@ export default function UserPostsComponent({ userName }) {
             )
           );
         });
-  
+
         setHubConnection(connection);
         fetchUserPosts();
       } catch (error) {
         console.error("Error starting SignalR connection", error);
       }
-  
+
       return () => {
         connection
           .stop()
@@ -53,11 +55,9 @@ export default function UserPostsComponent({ userName }) {
           );
       };
     };
-  
+
     initializeSignalR();
   }, []);
-  
-
 
   const handleCreatePost = () => {
     const postData = {
@@ -66,58 +66,70 @@ export default function UserPostsComponent({ userName }) {
       Description: newPostContent,
     };
 
-    axios.post('http://localhost:5221/Face_Book_App/Create_New_Post', postData)
-      .then(response => {
-        console.log('Post created successfully:', response.data);
-        setNewPostTitle('');
-        setNewPostContent('');
-        fetchUserPosts(); 
+    axios
+      .post("http://localhost:5221/Face_Book_App/Create_New_Post", postData)
+      .then((response) => {
+        console.log("Post created successfully:", response.data);
+        setNewPostTitle("");
+        setNewPostContent("");
+        fetchUserPosts();
         setShowNewPostSection(false);
       })
-      .catch(error => {
-        console.error('Error creating post:', error);
+      .catch((error) => {
+        console.error("Error creating post:", error);
       });
   };
 
   return (
     <div className="user-posts-container">
-        <div className="user-posts">
+      <div className="user-posts">
         <h3>User Posts with Likes</h3>
         <ul>
-            {postsWithLikes.map(post => (
+          {postsWithLikes.map((post) => (
             <li key={post.postId}>
-                <p className="post-title">{post.header}</p>
-                <p className="post-content">{post.description}</p>
-                <p className="like-count">Likes: {post.likeCount}</p>
-                <p className="post-time">Posted at: {post.postTime}</p>
+              <p className="post-title">{post.header}</p>
+              <p className="post-content">{post.description}</p>
+              <p className="like-count">Likes: {post.likeCount}</p>
+              <p className="post-time">Posted at: {post.postTime}</p>
             </li>
-            ))}
+          ))}
         </ul>
 
-        <button type="button" onClick={() => setShowNewPostSection(!showNewPostSection)}>
-            {showNewPostSection ? 'Hide New Post Section' : 'Show New Post Section'}
+        <button
+          type="button"
+          onClick={() => setShowNewPostSection(!showNewPostSection)}
+        >
+          {showNewPostSection
+            ? "Hide New Post Section"
+            : "Show New Post Section"}
         </button>
+      </div>
 
-        </div>
-      
       {showNewPostSection && (
         <div className="new-post-section">
-            <h3>Create a New Post</h3>
-            <label>
+          <h3>Create a New Post</h3>
+          <label>
             Post Title:
-            <input type="text" value={newPostTitle} onChange={(e) => setNewPostTitle(e.target.value)} />
-            </label>
-            <br />
-            <label>
+            <input
+              type="text"
+              value={newPostTitle}
+              onChange={(e) => setNewPostTitle(e.target.value)}
+            />
+          </label>
+          <br />
+          <label>
             Post Content:
-            <textarea value={newPostContent} onChange={(e) => setNewPostContent(e.target.value)} />
-            </label>
-            <br />
-            <button type="button" onClick={handleCreatePost}>
+            <textarea
+              value={newPostContent}
+              onChange={(e) => setNewPostContent(e.target.value)}
+            />
+          </label>
+          <br />
+          <button type="button" onClick={handleCreatePost}>
             Create Post
-            </button>
+          </button>
         </div>
-        )}
+      )}
     </div>
   );
 }

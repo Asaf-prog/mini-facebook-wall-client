@@ -1,24 +1,18 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import './AdminDashboard.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import "./AdminDashboard.css";
 import {
-    Chart as ChartJS,
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Legend
-  } from 'chart.js';
+  Chart as ChartJS,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-import { Bar } from 'react-chartjs-2';
+import { Bar } from "react-chartjs-2";
 
-ChartJS.register(
-    BarElement,
-    CategoryScale,
-    LinearScale,
-    Tooltip,
-    Legend
-);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default function AdminDashboard() {
   const [posts, setPosts] = useState([]);
@@ -27,7 +21,6 @@ export default function AdminDashboard() {
   const [likesData, setLikesData] = useState([]);
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
-  
 
   useEffect(() => {
     fetchData();
@@ -45,48 +38,51 @@ export default function AdminDashboard() {
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('http://localhost:5221/Face_Book_App/admin/all_posts');
+      const response = await axios.get(
+        "http://localhost:5221/Face_Book_App/admin/all_posts"
+      );
       setPosts(response.data);
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
     }
   };
 
   const fetchLikesData = async (postId) => {
     try {
-      const response = await axios.get(`http://localhost:5221/Face_Book_App/admin/likes-per-day/${postId}`);
+      const response = await axios.get(
+        `http://localhost:5221/Face_Book_App/admin/likes-per-day/${postId}`
+      );
       setLikesData(response.data);
     } catch (error) {
-      console.error('Error fetching likes data:', error);
+      console.error("Error fetching likes data:", error);
     }
   };
 
   const updateChart = () => {
     const maxLikesIndex = likesData.findIndex(
-        (day) =>
-          day.likeCount === Math.max(...likesData.map((day) => day.likeCount)));
-    
-    const backgroundColors = Array(likesData.length).fill('aqua');
-    backgroundColors[maxLikesIndex] = 'red';
-    
+      (day) =>
+        day.likeCount === Math.max(...likesData.map((day) => day.likeCount))
+    );
+
+    const backgroundColors = Array(likesData.length).fill("aqua");
+    backgroundColors[maxLikesIndex] = "red";
+
     setChartData({
       labels: likesData.map((day) => day.likedAt),
       datasets: [
         {
-          label: 'Most Liked Day',
-          data:likesData.map((day) => day.likeCount),
-          borderColor: 'black',
-          backgroundColor:backgroundColors,
+          label: "Most Liked Day",
+          data: likesData.map((day) => day.likeCount),
+          borderColor: "black",
+          backgroundColor: backgroundColors,
           borderWidth: 1,
         },
       ],
     });
-  
-    setChartOptions({
-      
-    });  
+
+    setChartOptions({});
   };
-  
+
   const handlePostClick = (post) => {
     setSelectedPost(post.postId);
     setCurrentPost(post);
@@ -111,27 +107,21 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
-  
+
       <div className="right-panel">
         {selectedPost && (
           <div>
             <div className="chart-container">
-              <Bar
-                data={chartData}
-                options={chartOptions}
-              />
+              <Bar data={chartData} options={chartOptions} />
             </div>
 
             <div className="post-container">
-                <h3>{currecntdPost.header}</h3>
-                <p>{currecntdPost.description}</p>
+              <h3>{currecntdPost.header}</h3>
+              <p>{currecntdPost.description}</p>
             </div>
-
-            
           </div>
         )}
       </div>
     </div>
   );
-  
 }
